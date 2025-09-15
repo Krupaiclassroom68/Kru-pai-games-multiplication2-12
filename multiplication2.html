@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kru Pai – เกมฝึกสูตรคูณ (ฟ้า–ขาว • ปุ่มล่าง • สะสมดาวถาวร)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6fbff; --card:#ffffff; --muted:#5c7a99; --text:#1c2b3a;
+    --primary:#4dafff; --primary-2:#2e8de6; --line:#cfe7ff;
+    --ok:#18b77a; --bad:#ff5b7d; --soft:#eaf5ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#f8fcff 0%,#eef7ff 100%);font-family:Fredoka,system-ui,Segoe UI,Helvetica,Arial,sans-serif;color:var(--text)}
+  .wrap{max-width:960px;margin:0 auto;padding:18px}
+  .brand{display:flex;align-items:center;gap:12px;margin:4px 0 12px}
+  .logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#ffb84d,#ff8833);color:#fff;font-weight:800;display:grid;place-items:center}
+  h1{margin:8px 0 6px;font-size:28px}
+  h2{margin:10px 0 8px;font-size:22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 10px 28px rgba(32,98,164,.12)}
+  .row{display:flex;flex-wrap:wrap;gap:12px}
+  .col{flex:1 1 260px}
+  label{font-size:14px;color:var(--muted)}
+  input[type="text"],select{width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--text);font-size:16px;outline:none}
+  .optline{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .pill{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;background:#fff;border:2px solid var(--line);color:var(--text)}
+  .btn{background:linear-gradient(135deg,var(--primary),var(--primary-2));border:none;color:#fff;font-weight:700;padding:14px 18px;border-radius:16px;cursor:pointer;font-size:18px;box-shadow:0 10px 22px rgba(77,175,255,.3)}
+  .btn.ghost{background:#fff;color:var(--primary-2);border:2px solid var(--primary)}
+  .btn.secondary{background:#ffffff;color:var(--primary-2);border:2px solid var(--primary)}
+  .hidden{display:none!important}
+  .center{display:grid;place-items:center}
+  .tag{font-size:12px;color:#3c5b7a;background:#f0f8ff;border:1px solid var(--line);padding:6px 10px;border-radius:999px}
+
+  .stage{display:flex;flex-direction:column;gap:12px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:#f0f8ff;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;color:#346089}
+  .problem{background:#ffffff;border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;justify-content:center;align-items:center;gap:12px;font-size:clamp(22px,5vw,40px)}
+  .digits{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+  .box{width:56px;height:66px;background:#f6fbff;border:2.5px dashed var(--line);border-radius:16px;display:grid;place-items:center;font-size:28px;color:#5c7a99;transition:all .2s}
+  .box.filled{border-style:solid;color:#1c2b3a}
+  .box.good{border-color:var(--ok);background:#eafff6}
+  .box.bad{border-color:var(--bad);background:#fff0f4}
+  .bar{height:12px;background:#e8f5ff;border-radius:999px;overflow:hidden;border:1.5px solid var(--line)}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#90d6ff,#4dafff)}
+  .toast{min-height:44px;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+  .toast.ok{background:#e9fff6;border:1.5px solid #b9f6df;color:#117b54}
+  .toast.bad{background:#fff0f5;border:1.5px solid #ffc4d2;color:#b02a50}
+  .sub{color:#4c6987;font-size:14px}
+
+  .section-pad{margin-top:10px}
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:#ffffff;border:2px solid var(--line);border-radius:18px;padding:14px}
+  .key{padding:18px 0;border-radius:18px;background:#eaf5ff;color:#0e2c47;font-size:26px;font-weight:700;border:2px solid #bfe3ff;text-align:center;cursor:pointer;user-select:none}
+  .key:active{transform:scale(0.96);background:#cfeaff}
+  .key.wide{grid-column:span 3}
+  .actions{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .actions .btn{min-width:170px}
+  .actions .btn.secondary{background:#fff;color:var(--primary-2);border:2px solid var(--primary)}
+  .actions .btn.ghost{background:#fff;color:#0e2c47;border:2px solid var(--line)}
+
+  .stars-wrap{margin-top:16px;background:#ffffff;border:2px dashed var(--line);border-radius:18px;padding:12px 14px}
+  .stars-title{font-size:14px;color:#4c6987;margin-bottom:8px;text-align:center}
+  .stars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .star{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 10px;border-radius:14px;background:#f6fbff;border:2px solid #d9ecff;color:#6a88a6;font-weight:700}
+  .star .num{font-weight:800}
+  .star.on{background:#fff8de;border-color:#ffd47a;color:#a06000;box-shadow:0 6px 16px rgba(255,212,122,.35);animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+
+  @media(min-width:820px){.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="logo">KP</div>
+    <div>
+      <div style="font-weight:800;font-size:18px">Kru Pai Classroom</div>
+      <div style="color:#5c7a99;font-size:13px">เกมฝึกสูตรคูณ – โหมดเรียงตามแม่ / โหมดสุ่มผสม</div>
+    </div>
+  </div>
+
+  <!-- START -->
+  <section id="screen-start" class="card">
+    <h1>เริ่มฝึกสูตรคูณ</h1>
+    <div class="row">
+      <div class="col">
+        <label>ชื่อนักเรียน</label>
+        <input id="playerName" type="text" placeholder="เช่น น้องพาย" />
+      </div>
+      <div class="col">
+        <label>โหมดการเล่น</label>
+        <select id="mode">
+          <option value="sequential" selected>เรียงตามแม่ (เหมาะ ป.1–ป.2)</option>
+          <option value="random">สุ่มผสม (เหมาะ ป.2–ป.6)</option>
+        </select>
+      </div>
+      <div class="col" id="seqBox">
+        <label>เลือกแม่ (2–12)</label>
+        <select id="tableNum">
+          <script>for(let i=2;i<=12;i++){document.write(`<option value="${i}" ${i===2?'selected':''}>แม่ ${i}</option>`);}</script>
+        </select>
+      </div>
+      <div class="col hidden" id="randCountBox">
+        <label>จำนวนข้อ (โหมดสุ่ม)</label>
+        <select id="randCount">
+          <option value="20" selected>20 ข้อ</option>
+          <option value="30">30 ข้อ</option>
+          <option value="50">50 ข้อ</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="optline">
+      <span class="pill"><input type="checkbox" id="use2to12" checked> ใช้แม่ 2–12 ทั้งหมด (สำหรับโหมดสุ่ม)</span>
+      <span class="tag">ไม่มีจับเวลา • ปุ่มช่วยอยู่ด้านล่าง • สีฟ้า–ขาวสบายตา</span>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+      <button id="btnStart" class="btn">เริ่มเกม</button>
+      <button id="btnDemo" class="btn ghost">ทดลอง 6 ข้อ</button>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="screen-game" class="card hidden">
+    <div class="grid2">
+      <div class="stage">
+        <div class="chip"><span id="chipName">นักเรียน</span> • ข้อที่ <span id="qIndex">1</span>/<span id="qTotal">12</span></div>
+        <div class="problem"><span id="numA"></span>&nbsp;×&nbsp;<span id="numB"></span>&nbsp;=&nbsp;<div id="boxes" class="digits"></div></div>
+        <div id="toast" class="toast" style="visibility:hidden"></div>
+        <div class="bar"><i id="bar"></i></div>
+        <div id="hintLine" class="sub">ใส่คำตอบทีละหลัก ถ้าถูก กล่องจะเป็นสีเขียว ✨</div>
+      </div>
+
+      <div>
+        <h2 style="margin-bottom:8px">กดตัวเลข</h2>
+        <div id="pad" class="keypad section-pad"></div>
+
+        <div class="actions">
+          <button id="btnHint" class="btn secondary">ขอช่วยนิดนึง ✨</button>
+          <button id="btnBackspace" class="btn ghost">ลบ 1 หลัก ⌫</button>
+          <button id="btnSkip" class="btn ghost">ข้ามข้อ ➜</button>
+        </div>
+
+        <div class="stars-wrap">
+          <div class="stars-title">⭐ ดาวผ่านแม่ (2–12) – เล่นโหมด “เรียงตามแม่” ให้จบจะได้ดาว</div>
+          <div id="stars" class="stars"></div>
+        </div>
+
+        <div class="sub" style="margin-top:8px;text-align:center">Tip: ลองคิดในใจก่อน แล้วค่อยพิมพ์ทีละหลัก</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section id="screen-done" class="card hidden center">
+    <div style="max-width:560px;text-align:center">
+      <h1>สรุปผล 🎉</h1>
+      <p style="font-size:18px;color:#4c6987"><b id="sumName">นักเรียน</b> ทำได้ <b id="sumScore">0</b>/<b id="sumTotal">0</b> ข้อ</p>
+      <div id="badges" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0 16px"></div>
+      <div class="toast ok">เก่งมาก! ฝึกบ่อย ๆ จะจำสูตรคูณได้คล่องเลย ✨</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+        <button id="btnRestart" class="btn">เล่นใหม่</button>
+        <button id="btnHome" class="btn ghost">กลับหน้าแรก</button>
+      </div>
+      <div class="tag" style="margin-top:12px">© Kru Pai Classroom</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+const praise=["เยี่ยมมาก! 🌟","เก่งจังเลย 👏","สุดยอดเลย! ✅","ดีมาก ไปต่อจ้า 💪","ใกล้เป็นแชมป์แล้ว 🏅"];
+const gentle=["ไม่เป็นไร ลองใหม่นะ ✨","อีกนิดเดียวเอง สู้ๆ 💖","ลองคิดช้าลงอีกนิดน้า 🐢","ฮึบ! เปลี่ยนมุมคิดดูไหม 🔄","เยี่ยมที่ไม่ยอมแพ้ 💫"];
+
+/* ===== Persistence (localStorage) ===== */
+const STORAGE_KEY_PREFIX = "kp_mult_stars_"; // ต่อท้ายด้วยชื่อผู้เล่นเป็น key
+
+function getKeyFor(name){
+  // ตัดช่องว่าง / เคสแตกต่าง เพื่อให้ key เดียวกัน
+  return STORAGE_KEY_PREFIX + (name||"").trim().toLowerCase();
+}
+function loadPassedTables(name){
+  try{
+    const raw = localStorage.getItem(getKeyFor(name));
+    if(!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr)?arr:[]);
+  }catch(e){
+    console.warn("load stars fail", e);
+    return new Set();
+  }
+}
+function savePassedTables(name, set){
+  try{
+    const arr = Array.from(set);
+    localStorage.setItem(getKeyFor(name), JSON.stringify(arr));
+  }catch(e){
+    console.warn("save stars fail", e);
+  }
+}
+/* ===== End persistence ===== */
+
+const state={
+  mode:"sequential", name:"นักเรียน",
+  table:2, total:12, idx:0, score:0,
+  problems:[], current:null, input:[],
+  passedTables:new Set()
+};
+
+function show(id){["#screen-start","#screen-game","#screen-done"].forEach(s=>$(s).classList.add("hidden"));$(id).classList.remove("hidden");}
+function niceToast(m){const t=$("#toast");t.className="toast ok";t.textContent="✅ "+m;t.style.visibility="visible";}
+function badToast(m){const t=$("#toast");t.className="toast bad";t.textContent="💖 "+m;t.style.visibility="visible";}
+function hideToast(){ $("#toast").style.visibility="hidden"; }
+function hintLine(html){ $("#hintLine").innerHTML = html; }
+function setBar(){const pct=Math.round((state.idx+(state.input.length===String(state.current.ans).length?1:0))/state.total*100);$("#bar").style.width=pct+"%";}
+
+function buildSequential(table){const arr=[];for(let i=1;i<=12;i++){arr.push({a:table,b:i,ans:table*i});}return arr;}
+function buildRandom(n){const arr=[];for(let i=0;i<n;i++){const a=rand(2,12);const b=rand(1,12);arr.push({a,b,ans:a*b});}return arr;}
+
+/* Stars UI */
+function renderStars(){
+  const box=$("#stars"); box.innerHTML="";
+  for(let t=2;t<=12;t++){
+    const el=document.createElement("div");
+    el.className="star"+(state.passedTables.has(t)?" on":"");
+    el.innerHTML=`<span>⭐</span><span class="num">${t}</span>`;
+    box.appendChild(el);
+  }
+}
+function markStar(table){
+  state.passedTables.add(table);
+  savePassedTables(state.name, state.passedTables); // persist!
+  renderStars();
+}
+
+/* Start / events */
+$("#mode").addEventListener("change",()=>{
+  const m=$("#mode").value;
+  $("#seqBox").classList.toggle("hidden", m!=="sequential");
+  $("#randCountBox").classList.toggle("hidden", m!=="random");
+});
+
+$("#btnStart").onclick=()=>start(false);
+$("#btnDemo").onclick =()=>start(true);
+
+function start(demo){
+  state.name = $("#playerName").value.trim() || "นักเรียน";
+  state.mode = $("#mode").value;
+  state.idx=0; state.score=0;
+
+  // โหลดดาวเดิมตามชื่อผู้เล่น
+  state.passedTables = loadPassedTables(state.name);
+
+  if(state.mode==="sequential"){
+    state.table = parseInt($("#tableNum").value,10);
+    state.problems = buildSequential(state.table);
+    state.total = state.problems.length;
+  }else{
+    const n = demo ? 6 : parseInt($("#randCount").value,10);
+    state.problems = buildRandom(n);
+    state.total = state.problems.length;
+  }
+
+  $("#chipName").textContent = state.name;
+  $("#qTotal").textContent = state.total;
+
+  renderStars();
+  show("#screen-game");
+  nextQ();
+}
+
+function nextQ(){
+  state.current = state.problems[state.idx];
+  state.input = [];
+  $("#qIndex").textContent = state.idx+1;
+  $("#numA").textContent = state.current.a;
+  $("#numB").textContent = state.current.b;
+
+  const ansStr = String(state.current.ans);
+  const boxes = $("#boxes"); boxes.innerHTML="";
+  for(let i=0;i<ansStr.length;i++){
+    const d=document.createElement("div"); d.className="box"; d.textContent="•"; boxes.appendChild(d);
+  }
+  setBar(); hideToast();
+  hintLine(`เคล็ดลับ: ${state.current.a} × ${state.current.b} = ?  ลองทบทวนในใจ แล้วใส่ทีละหลักนะ ✨`);
+}
+
+/* keypad */
+(function buildPad(){
+  const pad=$("#pad");
+  const keys=["7","8","9","4","5","6","1","2","3","0","⌫","ส่งคำตอบ"];
+  keys.forEach(k=>{
+    const el=document.createElement("div");
+    el.className="key"+(k==="ส่งคำตอบ"?" wide":"");
+    el.textContent=k;
+    el.onclick=()=>onKey(k);
+    pad.appendChild(el);
+  });
+})();
+$("#btnBackspace").onclick=()=>onKey("⌫");
+$("#btnSkip").onclick=()=>{
+  if(confirm("ข้ามข้อนี้ก่อนไหม? (ไม่คิดคะแนน)")){
+    if(state.idx<state.total-1){ state.idx++; nextQ(); } else finish();
+  }
+};
+$("#btnHint").onclick=()=>{
+  const pos = state.input.length;
+  const d = String(state.current.ans)[pos];
+  hintLine(`ใบ้ให้หนึ่งหลัก: หลักที่ <b>${pos+1}</b> คือ <b>${d}</b> ✨`);
+};
+
+function onKey(k){
+  if(k==="⌫"){ backspace(); return; }
+  if(k==="ส่งคำตอบ"){ submitIfComplete(); return; }
+  if(!/^\d$/.test(k)) return;
+
+  const ansStr = String(state.current.ans);
+  if(state.input.length>=ansStr.length){ badToast('ครบทุกหลักแล้ว กด "ส่งคำตอบ" ได้เลย 😊'); return; }
+
+  const boxes=[...document.querySelectorAll(".box")];
+  const pos=state.input.length;
+  const box=boxes[pos]; box.classList.add("filled");
+
+  if(k===ansStr[pos]){
+    state.input.push(k);
+    box.textContent=k;
+    box.classList.remove("bad"); box.classList.add("good");
+    niceToast(praise[rand(0,praise.length-1)]);
+    if(state.input.length===ansStr.length){
+      state.score++;
+      setTimeout(()=>autoNext(),420);
+    }
+  }else{
+    box.classList.add("bad"); box.textContent="×";
+    badToast(gentle[rand(0,gentle.length-1)]);
+    setTimeout(()=>{ box.classList.remove("bad","filled"); box.textContent="•"; },400);
+  }
+}
+
+function backspace(){
+  if(state.input.length===0){ badToast("ยังไม่มีตัวเลขให้ลบนะ 😄"); return; }
+  const boxes=[...document.querySelectorAll(".box")];
+  const pos=state.input.length-1; state.input.pop();
+  boxes[pos].classList.remove("filled","good","bad"); boxes[pos].textContent="•";
+}
+
+function submitIfComplete(){
+  const ansStr=String(state.current.ans);
+  if(state.input.length!==ansStr.length){ badToast("ยังใส่ไม่ครบทุกหลักเลยน้า ✨"); return; }
+  autoNext();
+}
+function autoNext(){
+  if(state.idx<state.total-1){ state.idx++; nextQ(); }
+  else finish();
+}
+
+function finish(){
+  show("#screen-done");
+  $("#sumName").textContent = state.name;
+  $("#sumScore").textContent = state.score;
+  $("#sumTotal").textContent = state.total;
+
+  if(state.mode==="sequential"){
+    markStar(state.table); // บันทึกดาว + เรนเดอร์ใหม่
+  }
+
+  const rate = state.score/state.total;
+  const badges=$("#badges"); badges.innerHTML="";
+  const list = rate===1 ? ["🏆 Perfect!"] : rate>=.9 ? ["🌟 เก่งมาก"] : rate>=.7 ? ["💪 นักสู้ไม่ถอย"] : ["🐣 พัฒนาได้อีก!"];
+  list.forEach(t=>{
+    const el=document.createElement("div");
+    el.textContent=t;
+    el.style.background="#ffffff"; el.style.border="2px solid var(--line)";
+    el.style.padding="10px 14px"; el.style.borderRadius="14px";
+    badges.appendChild(el);
+  });
+}
+
+/* Reset stars for current player: Ctrl+Alt+R */
+window.addEventListener("keydown",(e)=>{
+  if(e.ctrlKey && e.altKey && e.key.toLowerCase()==="r"){
+    if(confirm("ล้างดาวของผู้เล่นนี้ทั้งหมดไหม?")){
+      localStorage.removeItem(getKeyFor(state.name));
+      state.passedTables = new Set();
+      renderStars();
+      alert("ล้างดาวเรียบร้อยค่ะ ✨");
+    }
+  }
+});
+
+$("#btnRestart").onclick=()=>start(false);
+$("#btnHome").onclick =()=>show("#screen-start");
+</script>
+</body>
+</html>
